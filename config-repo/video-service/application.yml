@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://video-db:5432/video_db
+    username: dev
+    password: dev
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/

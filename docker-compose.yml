@@ -1,0 +1,83 @@
+services:
+  eureka-server:
+    build:
+      context: ./services/eureka-server  # Explicit context
+      dockerfile: Dockerfile             # Multi-stage Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - streaming-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8761/actuator/health || exit 1"]
+      interval: 30s
+      retries: 3
+      start_period: 60s
+
+  config-server:
+    build:
+      context: ./services/config-server
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    volumes:
+      - ./config-repo:/config/config-repo:ro
+    environment:
+      - ENCRYPT_KEY=LocalDevKey123
+    networks:
+      - streaming-net
+
+  # Video DB
+  video-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: video_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5433:5432"
+    networks:
+      - streaming-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev -d video_db" ]
+      interval: 10s
+      retries: 5
+
+  # User DB
+  user-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5434:5432"
+    networks:
+      - streaming-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev -d user_db" ]
+      interval: 10s
+      retries: 5
+
+  # Gateway Service (Add this)
+  gateway-service:
+    build:
+      context: ./services/gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - streaming-net
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+networks:
+  streaming-net:
+    driver: bridge

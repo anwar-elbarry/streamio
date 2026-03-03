@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://user-db:5432/user_db
+    username: dev
+    password: dev
+  jpa:
+    hibernate:
+      ddl-auto: update
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/

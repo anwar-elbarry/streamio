@@ -1,3 +1,18 @@
 spring:
   application:
     name: gateway-service
+  cloud:
+    config:
+      enabled: true
+    bootstrap:
+      enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+server:
+  port: 8080
