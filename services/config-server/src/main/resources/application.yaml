@@ -1,3 +1,25 @@
 spring:
   application:
     name: config-server
+
+server:
+  port: 8888
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:../../config-repo
+          search-paths: video-service,user-service,gateway-service
+          default-label: main
+
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
