@@ -61,6 +61,28 @@ services:
       interval: 10s
       retries: 5
 
+  # User Service
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_healthy
+      user-db:
+        condition: service_healthy
+    networks:
+      - streaming-net
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user_db
+      - SPRING_DATASOURCE_USERNAME=dev
+      - SPRING_DATASOURCE_PASSWORD=dev
+
   # Gateway Service (Add this)
   gateway-service:
     build:
