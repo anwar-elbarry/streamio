@@ -30,4 +30,14 @@ public class GlobalExceptionHandler {
                 "message", ex.getMessage()
         ));
     }
+
+    @ExceptionHandler(VideoServiceException.class)
+    public ResponseEntity<Map<String, Object>> handleVideoServiceException(VideoServiceException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", HttpStatus.BAD_GATEWAY.value(),
+                "error", "Video Service Error",
+                "message", ex.getMessage()
+        ));
+    }
 }
