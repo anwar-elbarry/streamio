@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: user-service
+    config:
+      import: "optional:configserver:http://localhost:8888" # Points to your config-server
+      profiles:
+        active: dev
+server:
+  port: 8083
+
+services:
+  video-service:
+    url: http://localhost:8082
+
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 5000
+      video-service:
+        url: ${services.video-service.url}
+
